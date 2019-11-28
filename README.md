@@ -1,2 +1,2 @@
-# lazy-cli
+# lazy-ac-cli
 lazy
