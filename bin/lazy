@@ -1,17 +1,36 @@
 #!/usr/bin/env node
 
 const program = require('commander')
-const createGitignore = require('../helps/createGitignore')
+const chalk = require('chalk')
+const createFile = require('../helps/createFile')
+const { templateUrl } = require('../config')
 
 program
-  .version(require('../package').version)
+  .version(require('../package').version, '-v, --version')
   .usage('<我就知道你会来的>')
   .command('-gitignore', '快速生成 .gitignore 文件')
 
-program.parse(process.argv)
+program.on('--help', () => {
+  console.log('  举个例子:')
+  console.log()
+  console.log(chalk.gray('    # 创建 .gitignore 文件'))
+  console.log('    $ lazy gitignore')
+  console.log()
+})
+
+/**
+ * help
+ */
+function help () {
+  program.parse(process.argv)
+  if (program.args.length < 1) {
+    program.help()
+  }
+}
+help()
 
 const args = program.args || []
-console.log(args)
+
 if (args[0] === 'gitignore') {
-  createGitignore()
+  createFile(templateUrl.gitIgnore, '.gitignore')
 }
