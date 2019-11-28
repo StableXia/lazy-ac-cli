@@ -1,7 +1,7 @@
 const https = require('https');
 const fs = require('fs');
 
-const url = 'https://raw.githubusercontent.com/zhuweileo/my-git-ignore/master/.gitignore';
+const url = 'https://raw.githubusercontent.com/xiaotangdou/lazy-cli/master/templates/gitignore.tpl';
 
 module.exports = function createGitignore(){
   https.get(url, function (res) {
