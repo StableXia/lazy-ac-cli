@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/xiaotangdou/lazy-cli#readme",
   "dependencies": {
+    "chalk": "^3.0.0",
     "commander": "^4.0.1"
   }
 }
