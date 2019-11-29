@@ -2,7 +2,7 @@
 
 const program = require('commander')
 const colors = require('colors')
-const createFile = require('../helps/createFile')
+const downloadTemplate = require('../helps/downloadTemplate')
 const getWeather = require('../helps/weather')
 const print = require('../helps/weather/print')
 const ora = require('ora')
@@ -23,59 +23,86 @@ colors.setTheme({
 
 program
   .version(require('../package').version, '-v, --version')
+  .name('lazy')
   .usage('<我就知道你会来的>'.green)
-  .command('-gitignore', '快速生成 .gitignore 文件')
-  .command('-weather', '查看天气')
 
+/**
+ * 帮助信息
+ */
 program.on('--help', () => {
-  console.log('  举个例子:')
   console.log()
-  console.log('    # 创建 .gitignore 文件')
-  console.log('    $ lazy gitignore')
+  console.log('举个例子:')
+  console.log()
+  console.log('  # 创建 .gitignore 文件')
+  console.log('  $ lazy gitignore')
   console.log()
 })
 
 /**
- * help
+ * 拉取 gitignore 文件
  */
-function help () {
-  program.parse(process.argv)
-  if (program.args.length < 1) {
-    program.help()
-  }
-}
-help()
+program
+  .command('gitignore [cmds...]')
+  .description('快速生成 .gitignore 文件')
+  .action(cmds => {
+    if (cmds.length > 0) {
+      console.log('不需要参数: %s\n参见 lazy --help', cmds.join(' ').red)
+      process.exit(1)
+    }
+    const spinner = ora('gitignore 模板下载中...'.yellow)
+    spinner.start()
+    downloadTemplate(templateUrl.gitIgnore, '.gitignore')
+      .then(() => {
+        spinner.stop()
+        console.log('gitignore 模板下载成功'.green)
+      })
+      .catch(() => {
+        spinner.stop()
+        console.log('gitignore 模板下载失败'.red)
+      })
+  })
 
-const args = program.args || []
+/**
+ * 天气查询
+ */
+program
+  .command('weather [names...]')
+  .description('天气查询')
+  .action(names => {
+    if (names.length > 1) {
+      console.log('参数太多: %s\n参见 lazy --help', names.slice(1).join(' ').red)
+      process.exit(1)
+    }
+    const spinner = ora('天气查询中...'.yellow)
+    spinner.start()
+    getWeather(names[0])
+      .then(res => {
+        spinner.stop()
+        print.printToday(res[0])
+        print.printSuggestion(res[1])
+        print.printDaily(res[2])
+      })
+      .catch(() => {
+        spinner.stop()
+        console.log('天气查询失败'.red)
+      })
+  })
 
-if (args[0] === 'gitignore') {
-  const spinner = ora('gitignore 模板下载中...'.yellow)
-  spinner.start()
-  createFile(templateUrl.gitIgnore, '.gitignore')
-    .then(() => {
-      spinner.stop()
-      console.log('gitignore 模板下载成功'.green)
-    })
-    .catch(() => {
-      spinner.stop()
-      console.log('gitignore 模板下载失败'.red)
-    })
-  return
+program.on('command:*', function() {
+  console.log('未知命令: %s\n参见 lazy --help', program.args.join(' ').red)
+  process.exit(1)
+})
+
+const parsed = program.parseOptions(process.argv.slice(2))
+
+if (parsed.unknown.length > 0) {
+  console.log('未知选项: %s\n参见 lazy --help', parsed.unknown.join(' ').red)
+  process.exit(1)
 }
 
-if (args[0] === 'weather') {
-  const spinner = ora('天气查询中...'.yellow)
-  spinner.start()
-  getWeather(args[1])
-    .then(res => {
-      spinner.stop()
-      print.printToday(res[0])
-      print.printSuggestion(res[1])
-      print.printDaily(res[2])
-    })
-    .catch(() => {
-      spinner.stop()
-      console.log('天气查询失败'.red)
-    })
-  return
+if (parsed.args.length === 0) {
+  program.help()
 }
+
+program.parse(process.argv)
+

@@ -8,7 +8,7 @@
 const request = require('request-promise')
 const fs = require('fs')
 
-module.exports = async function createFile(url, filePath){
+module.exports = async function downloadTemplate(url, filePath){
   try {
     const res = await request({ method: 'GET', url })
     fs.writeFileSync(filePath, res, { encoding: 'utf8' })
