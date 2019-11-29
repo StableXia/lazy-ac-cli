@@ -1,19 +1,36 @@
 #!/usr/bin/env node
 
 const program = require('commander')
-const chalk = require('chalk')
+const colors = require('colors')
 const createFile = require('../helps/createFile')
+const getWeather = require('../helps/weather')
+const print = require('../helps/weather/print')
+const ora = require('ora')
 const { templateUrl } = require('../config')
+
+colors.setTheme({
+  silly: 'rainbow',
+  input: 'grey',
+  verbose: 'cyan',
+  prompt: 'grey',
+  info: 'green',
+  data: 'grey',
+  help: 'cyan',
+  warn: 'yellow',
+  debug: 'blue',
+  error: 'red'
+})
 
 program
   .version(require('../package').version, '-v, --version')
-  .usage('<我就知道你会来的>')
+  .usage('<我就知道你会来的>'.green)
   .command('-gitignore', '快速生成 .gitignore 文件')
+  .command('-weather', '查看天气')
 
 program.on('--help', () => {
   console.log('  举个例子:')
   console.log()
-  console.log(chalk.gray('    # 创建 .gitignore 文件'))
+  console.log('    # 创建 .gitignore 文件')
   console.log('    $ lazy gitignore')
   console.log()
 })
@@ -32,5 +49,33 @@ help()
 const args = program.args || []
 
 if (args[0] === 'gitignore') {
+  const spinner = ora('gitignore 模板下载中...'.yellow)
+  spinner.start()
   createFile(templateUrl.gitIgnore, '.gitignore')
+    .then(() => {
+      spinner.stop()
+      console.log('gitignore 模板下载成功'.green)
+    })
+    .catch(() => {
+      spinner.stop()
+      console.log('gitignore 模板下载失败'.red)
+    })
+  return
+}
+
+if (args[0] === 'weather') {
+  const spinner = ora('天气查询中...'.yellow)
+  spinner.start()
+  getWeather(args[1])
+    .then(res => {
+      spinner.stop()
+      print.printToday(res[0])
+      print.printSuggestion(res[1])
+      print.printDaily(res[2])
+    })
+    .catch(() => {
+      spinner.stop()
+      console.log('天气查询失败'.red)
+    })
+  return
 }

@@ -5,16 +5,15 @@
  * @Last Modified time:2019-11-28 19:55:45
  */
 
-const https = require('https')
+const request = require('request-promise')
 const fs = require('fs')
 
-module.exports = function createFile(url, filePath){
-  https.get(url, function (res) {
-    let rawData = ''
-    res.setEncoding('utf8')
-    res.on('data', chunk => { rawData += chunk })
-    res.on('end', () => { fs.writeFileSync(filePath, rawData)})
-  }).on('error',function (e) {
-    console.log(e)
-  })
+module.exports = async function createFile(url, filePath){
+  try {
+    const res = await request({ method: 'GET', url })
+    fs.writeFileSync(filePath, res, { encoding: 'utf8' })
+    return true
+  } catch (err) {
+    throw err
+  }
 }

@@ -7,6 +7,6 @@
 
 module.exports = {
     templateUrl: {
-        gitIgnore: 'https://raw.githubusercontent.com/xiaotangdou/lazy-cli/master/templates/gitignore.tpl'
+        gitIgnore: 'https://raw.githubusercontent.com/xiaotangdou/lazy-ac-cli/master/templates/gitignore.tpl'
     }
 }
