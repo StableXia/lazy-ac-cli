@@ -2,11 +2,13 @@
 
 const program = require('commander')
 const colors = require('colors')
+const inquirer = require('inquirer')
 const downloadTemplate = require('../libs/downloadTemplate')
 const getWeather = require('../libs/weather')
 const print = require('../libs/weather/print')
 const ora = require('ora')
-const { templateUrl } = require('../config')
+const { templateUrl } = require('../libs/consts')
+const { filePathExist } = require('../libs/helps')
 
 colors.setTheme({
   silly: 'rainbow',
@@ -44,11 +46,28 @@ program.on('--help', () => {
 program
   .command('gitignore [cmds...]')
   .description('快速生成 .gitignore 文件')
-  .action(cmds => {
+  .action(async cmds => {
     if (cmds.length > 0) {
       console.log('不需要参数: %s\n参见 lazy --help', cmds.join(' ').red)
       process.exit(1)
     }
+
+    const isExist = await filePathExist('.gitignore')
+    if (isExist) {
+      const questions = [
+        {
+          type: 'confirm',
+          name: 'override',
+          message: '是否覆盖？'
+        }
+      ]
+
+      const { override } = await inquirer.prompt(questions)
+      if (!override) {
+        process.exit(1)
+      }
+    }
+
     const spinner = ora('gitignore 模板下载中...'.yellow)
     spinner.start()
     downloadTemplate(templateUrl.gitIgnore, '.gitignore')
@@ -70,7 +89,10 @@ program
   .description('天气查询')
   .action(names => {
     if (names.length > 1) {
-      console.log('参数太多: %s\n参见 lazy --help', names.slice(1).join(' ').red)
+      console.log(
+        '参数太多: %s\n参见 lazy --help',
+        names.slice(1).join(' ').red
+      )
       process.exit(1)
     }
     const spinner = ora('天气查询中...'.yellow)
@@ -105,4 +127,3 @@ if (parsed.args.length === 0) {
 }
 
 program.parse(process.argv)
-

@@ -8,8 +8,7 @@
 const crypto = require('crypto')
 const querystring = require('querystring')
 const request = require('request-promise')
-
-const URL = 'https://api.seniverse.com/v3/'
+const { weatherUrl } = require('../consts')
 
 function Api(uid, secretKey) {
   this.uid = uid
@@ -35,9 +34,9 @@ Api.prototype.getWeatherNow = function(location) {
   var params = this.getSignatureParams();
   params.location = location;
 
-  // 将构造的 URL 直接在后端 server 内调用
+  // 将构造的 weatherUrl.baidu 直接在后端 server 内调用
   return request({
-    url: URL + 'weather/now.json',
+    url: weatherUrl.baidu + 'weather/now.json',
     qs : params,
     json : true
   })
@@ -47,9 +46,9 @@ Api.prototype.getSuggestion = function(location) {
   var params = this.getSignatureParams()
   params.location = location
 
-  // 将构造的 URL 直接在后端 server 内调用
+  // 将构造的 weatherUrl.baidu 直接在后端 server 内调用
   return request({
-    url: URL + 'life/suggestion.json',
+    url: weatherUrl.baidu + 'life/suggestion.json',
     qs : params,
     json : true
   })
@@ -59,9 +58,9 @@ Api.prototype.getDaily = function(location) {
   var params = this.getSignatureParams()
   params.location = location
 
-  // 将构造的 URL 直接在后端 server 内调用
+  // 将构造的 weatherUrl.baidu 直接在后端 server 内调用
   return request({
-    url: URL + 'weather/daily.json',
+    url: weatherUrl.baidu + 'weather/daily.json',
     qs : params,
     json : true
   })
