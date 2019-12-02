@@ -7,7 +7,7 @@ const downloadTemplate = require('../libs/downloadTemplate')
 const getWeather = require('../libs/weather')
 const print = require('../libs/weather/print')
 const ora = require('ora')
-const { templateUrl } = require('../libs/consts')
+const { templateUrl, inquirerMsg } = require('../libs/consts')
 const { filePathExist } = require('../libs/helps')
 
 colors.setTheme({
@@ -54,15 +54,7 @@ program
 
     const isExist = await filePathExist('.gitignore')
     if (isExist) {
-      const questions = [
-        {
-          type: 'confirm',
-          name: 'override',
-          message: '是否覆盖？'
-        }
-      ]
-
-      const { override } = await inquirer.prompt(questions)
+      const { override } = await inquirer.prompt(inquirerMsg.confirm.override)
       if (!override) {
         process.exit(1)
       }
