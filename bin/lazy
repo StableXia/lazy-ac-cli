@@ -26,6 +26,7 @@ colors.setTheme({
 
 program
   .version(require('../package').version, '-v, --version')
+  .option('-b, --branch <branchName>', 'the name of the merged source branch')
   .name('lazy')
   .usage('<我就知道你会来的>'.green)
 
@@ -108,6 +109,35 @@ program
 /**
  * git快捷操作
  */
+program
+  .command('merge <branchs...>')
+  .description('批量分支合并， branchs 合并的目标分支')
+  .action(branchs => {
+    branchs.forEach(branchName => {
+      if (shell.exec(`git checkout ${branchName}`).code !== 0) {
+        shell.echo(`Error: git checkout ${branchName}`.red);
+        shell.exit(1)
+        process.exit(1)
+      }
+      if (shell.exec('git pull --rebase').code !== 0) {
+        shell.echo(`Error: git pull --rebase`.red);
+        shell.exit(1)
+        process.exit(1)
+      }
+      if (shell.exec(`git merge ${program.branch}`).code !== 0) {
+        shell.echo(`Error: git merge ${program.branch}`.red);
+        shell.exit(1)
+        process.exit(1)
+      }
+      if (shell.exec('git push').code !== 0) {
+        shell.echo(`Error: git push`.red);
+        shell.exit(1)
+        process.exit(1)
+      }
+    })
+    shell.exec(`git checkout ${program.branch}`)
+    process.exit(1)
+  })
 
 /**
  * 未知命令或参数的报错提示
