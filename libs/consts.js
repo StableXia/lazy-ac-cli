@@ -2,9 +2,8 @@
  * @Author:xiawen
  * @Date:2019-11-29 18:31:05
  * @LastModifiedBy:xiawen
- * @Last Modified time:2019-11-29 22:56:57
+ * @Last Modified time:2019-12-14 18:49:15
  */
-
 
 module.exports.templateUrl = {
   gitIgnore: 'https://raw.githubusercontent.com/xiaotangdou/lazy-ac-cli/master/templates/gitignore.tpl'
